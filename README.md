@@ -7,3 +7,7 @@ HealthConnect is a telemedicine platform designed to bridge the gap between pati
 The frontend of this project is deployed and accessible online. You can access it using the following link:
 
 [HealthConnect Frontend](https://health-connect-sandy.vercel.app/)
+
+## Backend Deployment
+
+[HealthConnect Backend](https://health-connect-2.onrender.com/)
