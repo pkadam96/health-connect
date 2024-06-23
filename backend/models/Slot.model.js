@@ -37,4 +37,6 @@ const Slot = sequelize.define('slots', {
     timestamps: false,
 });
 
+Slot.belongsTo(User, { foreignKey: 'doctorId', as: 'doctor' });
+
 module.exports = Slot;

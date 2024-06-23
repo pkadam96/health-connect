@@ -42,4 +42,6 @@ const User = sequelize.define('users', {
     timestamps: false,
 });
 
+User.belongsTo(Department, { foreignKey: 'department_id' });
+
 module.exports = User;
