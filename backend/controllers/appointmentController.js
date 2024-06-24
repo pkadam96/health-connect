@@ -140,13 +140,6 @@ exports.getPatientAppointments = async (req, res) => {
 };
 
 
-
-
-
-
-
-
-
 // Cancel an appointment by a patient
 exports.cancelAppointment = async (req, res) => {
   const { appointmentId } = req.params;
