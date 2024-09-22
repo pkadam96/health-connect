@@ -1,14 +1,13 @@
-// import { Login } from "./components/Login";
-import { LandingPage } from "./components/LandingPage";
 import { Navbar } from "./components/Navbar";
+import { AuthProvider } from "./context/AuthContext";
+import { AllRoutes } from "./router/AllRoutes";
 
 function App() {
   return (
-    <>
-      {/* <Login/> */}
-      <Navbar/>
-      <LandingPage/>
-    </>
+    <AuthProvider>
+      <Navbar />
+      <AllRoutes />
+    </AuthProvider>
   );
 }
 

@@ -24,7 +24,7 @@ export default {
       },
       height: {
         'screen-100': 'calc(100vh - 60px)',
-        'screen-full':"90vh"
+        'screen-full': "90vh"
       },
       animation: {
         'slide-in-right': 'slideInRight 1s ease-out',
@@ -58,7 +58,7 @@ export default {
             transform: 'translateY(0%)'
           }
         },
-        breathing : {
+        breathing: {
           '0%': { transform: 'translateY(50%)' },
           '90%': { transform: 'translateY(-10%)' },
           '100%': { transform: 'translateY(0%)' },
@@ -73,5 +73,6 @@ export default {
     'xl': '1280px',  // Target larger screens
   },
   plugins: [
+    require('@tailwindcss/line-clamp'),
   ],
 }

@@ -2,20 +2,13 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/dbConnect');
 const User = require('./User.model');
 const Slot = require('./Slot.model');
+const Department = require('./Department.model');
 
-const Appointment = sequelize.define('appointments', {
+const Appointments = sequelize.define('appointment', {
   appointmentId: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true
-  },
-  slotId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: Slot,
-      key: 'slotId'
-    }
   },
   patientId: {
     type: DataTypes.INTEGER,
@@ -25,24 +18,65 @@ const Appointment = sequelize.define('appointments', {
       key: 'userId'
     }
   },
-  status: {
-    type: DataTypes.ENUM('pending', 'confirmed', 'cancelled', 'completed'),
-    allowNull: false,
-    defaultValue: 'pending'
+  name: {
+    type: DataTypes.STRING(500),
+    allowNull: false
   },
-  reason: {
-    type: DataTypes.STRING,
+  age: {
+    type: DataTypes.INTEGER,
     allowNull: true
   },
-  notes: {
+  gender: {
+    type: DataTypes.ENUM('Male', 'Female', 'Other'),
+    allowNull: true
+  },
+  deptId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: Department,
+      key: 'deptId'
+    }
+  },
+  doctorId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: User,
+      key: 'userId'
+    }
+  },
+  appointmentDate: {
+    type: DataTypes.DATE,
+    allowNull: false
+  },
+  slotId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: Slot,
+      key: 'slotId'
+    }
+  },
+  status: {
+    type: DataTypes.ENUM('Pending', 'Confirmed', 'Cancelled', 'Completed'),
+    allowNull: false,
+    defaultValue: 'Pending'
+  },
+  reason: {
     type: DataTypes.TEXT,
     allowNull: true
   }
 }, {
+  tableName: "appointment",
   timestamps: false,
 });
 
-Appointment.belongsTo(Slot, { foreignKey: 'slotId' });
-Appointment.belongsTo(User, { foreignKey: 'patientId', as: 'patient' });
+// In Appointments model file (associations)
+User.hasMany(Appointments, { foreignKey: 'patientId', as: 'appointments' });
+Appointments.belongsTo(User, { as: 'patient', foreignKey: 'patientId' });
+Appointments.belongsTo(User, { as: 'doctor', foreignKey: 'doctorId' });
+Appointments.belongsTo(Department, { foreignKey: 'deptId' });
+Appointments.belongsTo(Slot, { foreignKey: 'slotId' });
 
-module.exports = Appointment;
+module.exports = Appointments;

@@ -1,92 +1,95 @@
-const Appointment = require("../models/Appointments.model");
+const Appointments = require("../models/Appointments.model");
 const Slot = require("../models/Slot.model");
 const User = require('../models/User.model');
 const Department = require('../models/Department.model');
 
 // Book a new appointment (Patient Only)
 exports.bookAppointment = async (req, res) => {
+  const { name, age, gender, deptId, doctorId, appointmentDate, slotId, reason } = req.body;
+  const patientId = req.user.userId;
   try {
-    const { slotId, reason, status } = req.body;
-    const patientId = req.user.userId;     
-
-    const slot = await Slot.findOne({
-      where: { slotId, isAvailable: true },
-      include: [{ model: User, as: 'doctor', include: [{ model: Department, as: 'department' }] }]
-    });
-
-    if (!slot) {
-      return res.status(400).json({ message: 'Slot is not available' });
+    if (!patientId || !name || !deptId || !doctorId || !appointmentDate || !slotId) {
+      return res.status(400).json({ message: 'Please provide all required fields.' });
     }
 
-    const doctorId = slot.doctorId;
-
-    const appointment = await Appointment.create({
-      slotId,
+    // Create the appointment
+    const newAppointment = await Appointments.create({
       patientId,
+      name,
+      age,
+      gender,
+      deptId,
       doctorId,
-      reason,
-      status
+      appointmentDate,
+      slotId,
+      reason
     });
 
-    slot.isAvailable = false;
-    await slot.save();
+    const selectedSlot = await Slot.findByPk(slotId);
+    if (!selectedSlot) {
+      return res.status(404).json({ message: 'Slot not found' });
+    }
 
-    res.status(201).json({
-      message: 'Appointment booked successfully',
-      appointment
-    });
-  } 
-  catch (error) {
+    // Set isAvailable to false
+    selectedSlot.isAvailable = false;
+    await selectedSlot.save();
+
+    // Respond with the created appointment
+    res.status(201).json(newAppointment);
+  } catch (error) {
+    console.error('Error creating appointment:', error);
     res.status(500).json({ message: error.message });
   }
 };
 
- // const appointmentDetails = await Appointment.findOne({
-    //   where: { appointmentId: appointment.appointmentId },
-    //   include: [
-    //     {
-    //       model: Slot,
-    //       as: 'slot',
-    //       attributes: ['slotDate', 'startTime', 'endTime'],
-    //       include: [
-    //         {
-    //           model: User,
-    //           as: 'doctor',
-    //           attributes: ['name'],
-    //           include: [
-    //             {
-    //               model: Department,
-    //               as: 'department',
-    //               attributes: ['department_name']
-    //             }
-    //           ]
-    //         }
-    //       ]
-    //     },
-    //   ]
-    // });
 
-    // const {
-    //   appointmentId,
-    //   slot: {
-    //     slotDate,
-    //     startTime,
-    //     endTime,
-    //     doctor: {
-    //       name: doctorName,
-    //       department: { department_name: departmentName }
-    //     }
-    //   }
-    // } = appointmentDetails;
 
-    // const simplifiedAppointment = {
-    //   appointmentId,
-    //   slotDate,
-    //   startTime,
-    //   endTime,
-    //   doctorName,
-    //   departmentName
-    // };
+// const appointmentDetails = await Appointment.findOne({
+//   where: { appointmentId: appointment.appointmentId },
+//   include: [
+//     {
+//       model: Slot,
+//       as: 'slot',
+//       attributes: ['slotDate', 'startTime', 'endTime'],
+//       include: [
+//         {
+//           model: User,
+//           as: 'doctor',
+//           attributes: ['name'],
+//           include: [
+//             {
+//               model: Department,
+//               as: 'department',
+//               attributes: ['department_name']
+//             }
+//           ]
+//         }
+//       ]
+//     },
+//   ]
+// });
+
+// const {
+//   appointmentId,
+//   slot: {
+//     slotDate,
+//     startTime,
+//     endTime,
+//     doctor: {
+//       name: doctorName,
+//       department: { department_name: departmentName }
+//     }
+//   }
+// } = appointmentDetails;
+
+// const simplifiedAppointment = {
+//   appointmentId,
+//   slotDate,
+//   startTime,
+//   endTime,
+//   doctorName,
+//   departmentName
+// };
 
 
 
@@ -111,7 +114,7 @@ exports.getPatientAppointments = async (req, res) => {
                 {
                   model: Department,
                   as: 'department',
-                  attributes: ['department_name']
+                  attributes: ['departmentName']
                 }
               ]
             }
@@ -134,7 +137,8 @@ exports.getPatientAppointments = async (req, res) => {
     }));
 
     res.status(200).json({ appointments: simplifiedAppointments });
-  } catch (error) {
+  }
+  catch (error) {
     res.status(500).json({ message: 'Error fetching appointments', error });
   }
 };
@@ -222,11 +226,11 @@ exports.getAvailableSlots = async (req, res) => {
 
 // Get doctors by department
 exports.getDoctorsByDepartment = async (req, res) => {
-  const { departmentId } = req.params;
+  const { deptId } = req.params;
 
   try {
     const doctors = await User.findAll({
-      where: { department_id: departmentId, role: 'doctor' },
+      where: { deptId: deptId, role: 'doctor' },
     });
 
     res.status(200).json({ doctors });

@@ -1,10 +1,12 @@
 const Slot = require('../models/Slot.model');
+const sequelize = require('../config/dbConnect'); // Adjust the path as necessary
+const { Op } = require('sequelize');
 
 // Create a new slot (Doctor Only)
 exports.createSlot = async (req, res) => {
   try {
     const { slotDate, startTime, endTime } = req.body;
-    const doctorId = req.user.userId; 
+    const doctorId = req.user.userId;
 
     const slot = await Slot.create({
       slotDate,
@@ -14,7 +16,7 @@ exports.createSlot = async (req, res) => {
     });
 
     res.status(201).json({ message: 'Slot created successfully', slot });
-  } 
+  }
   catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -22,14 +24,28 @@ exports.createSlot = async (req, res) => {
 
 // Get all slots for a particular doctor
 exports.getSlotsByDoctor = async (req, res) => {
-  try {
-    const doctorId = req.user.userId; // Assuming req.user contains authenticated user info
+  const { doctorId } = req.params;  // Extract doctorId from request parameters
+  const { date } = req.query;  // Extract date from query parameters
 
-    const slots = await Slot.findAll({ where: { doctorId } });
+  try {
+    const slots = await Slot.findAll({
+
+      where: {
+        doctorId,
+        isAvailable: true,
+        slotDate: {
+          [Op.eq]: sequelize.fn('DATE', date)
+        }
+      }
+    });
+
+    if (!slots.length) {
+      return res.status(404).json({ message: 'No available slots found for this doctor on the specified date' });
+    }
 
     res.status(200).json(slots);
-  } 
-  catch (error) {
+  } catch (error) {
+    console.error('Error fetching slots:', error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -53,7 +69,7 @@ exports.updateSlot = async (req, res) => {
     await slot.save();
 
     res.status(200).json({ message: 'Slot updated successfully', slot });
-  } 
+  }
   catch (error) {
     res.status(500).json({ message: error.message });
   }

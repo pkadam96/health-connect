@@ -13,7 +13,7 @@ const roleMiddleware = require('../middlewares/role.middleware');
 const router = express.Router();
 
 // Book a new appointment (Patient Only)
-router.post('/book-appointment', authMiddleware, roleMiddleware('patient'), bookAppointment);
+router.post('/book-appointment', authMiddleware, bookAppointment);
 
 // Get all appointments for a particular patient (Patient Only)
 router.get('/patient/:patientId', authMiddleware, roleMiddleware('patient'), getPatientAppointments);
@@ -28,6 +28,6 @@ router.put('/update-appointment-status/:appointmentId', authMiddleware, roleMidd
 router.get('/available-slots', authMiddleware, getAvailableSlots);
 
 // Get doctors by department (Any authenticated user)
-router.get('/doctors/:departmentId', authMiddleware, getDoctorsByDepartment);
+router.get('/doctors/:deptId', authMiddleware, getDoctorsByDepartment);
 
 module.exports = router;
