@@ -1,4 +1,3 @@
-// DoctorDetails.model.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/dbConnect');
 const User = require('./User.model');

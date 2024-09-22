@@ -1,7 +1,6 @@
 const DoctorDetails = require("../models/DoctorDetails.model");
 const User = require("../models/User.model");
 
-// Fetch all doctor details including basic user info
 exports.doctors = async (req, res) => {
     try {
         const doctors = await DoctorDetails.findAll({
@@ -19,7 +18,8 @@ exports.doctors = async (req, res) => {
         }
 
         res.status(200).json(doctors);
-    } catch (error) {
+    }
+    catch (error) {
         console.error('Error fetching doctors:', error);
         res.status(500).json({ message: 'Error fetching doctors', error });
     }

@@ -72,7 +72,6 @@ const Appointments = sequelize.define('appointment', {
   timestamps: false,
 });
 
-// In Appointments model file (associations)
 User.hasMany(Appointments, { foreignKey: 'patientId', as: 'appointments' });
 Appointments.belongsTo(User, { as: 'patient', foreignKey: 'patientId' });
 Appointments.belongsTo(User, { as: 'doctor', foreignKey: 'doctorId' });

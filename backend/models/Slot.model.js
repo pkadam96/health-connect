@@ -38,7 +38,6 @@ const Slot = sequelize.define('slot', {
   timestamps: false,
 });
 
-// Slot model associations
 Slot.belongsTo(User, { as: 'doctor', foreignKey: 'doctorId' });
 
 module.exports = Slot;

@@ -50,7 +50,7 @@ exports.login = async (req, res) => {
     const token = jwt.sign(
       { userId: user.userId, firstName: user.firstName, lastName: user.lastName, email: user.email, role: user.role },
       JWT_SECRET,
-      { expiresIn: '1h' }
+      { expiresIn: '5h' }
     );
 
     res.status(200).json({
@@ -58,8 +58,9 @@ exports.login = async (req, res) => {
       token,
       user: { id: user.userId, firstName: user.firstName, lastName: user.lastName, email: user.email, role: user.role }
     });
-  } catch (error) {
-    console.error('Error logging in:', error); // Log the error for debugging
+  }
+  catch (error) {
+    console.error('Error logging in:', error);
     res.status(500).json({ message: 'Error logging in', error });
   }
 };
@@ -68,7 +69,6 @@ exports.dashboard = async (req, res) => {
   const userId = req.user.userId;
 
   try {
-    // Fetch user details along with their appointments
     const user = await User.findByPk(userId, {
       include: [
         {
@@ -91,7 +91,8 @@ exports.dashboard = async (req, res) => {
     }
 
     res.status(200).json(user);
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Error fetching user dashboard:', error);
     res.status(500).json({ message: 'Error fetching user dashboard' });
   }
@@ -114,13 +115,9 @@ exports.fetchDoctorsByDepartment = async (req, res) => {
       return res.status(404).json({ message: 'No doctors found for this department' });
     }
 
-    // const doctorNames = doctors.map(doctor => ({
-    //   id: doctor.userId, 
-    //   name: `${doctor.user.firstName} ${doctor.user.lastName}`
-    // }));
-
     res.status(200).json(doctors);
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Error fetching doctors by department:', error);
     res.status(500).json({ message: 'Error fetching doctors by department', error });
   }
