@@ -39,9 +39,8 @@ const Login = () => {
       });
       const { token, user } = response.data;
 
-      localStorage.setItem('token', token);
-      login(user);
-      alert(`Welcome ${user.firstName}`)
+      login(user, token);
+      alert(`Welcome ${user.firstName}`);
       navigate('/');
 
     } catch (error) {
@@ -63,7 +62,7 @@ const Login = () => {
       });
 
       alert('User registered successfully! You can now log in.');
-      handleSlide(true);  // Switch to login after signup
+      handleSlide(true);
 
     } catch (error) {
       setError('Error registering user. Please try again.');
@@ -87,6 +86,7 @@ const Login = () => {
             <div className="slider-tab" style={{ left: isLogin ? '0' : '50%' }}></div>
           </div>
           <div className="form-inner" style={{ marginLeft: isLogin ? '0' : '-100%' }}>
+
             {/* Login Form */}
             <form onSubmit={handleLogin} className="login">
               <div className="field">
